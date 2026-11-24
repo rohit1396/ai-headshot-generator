@@ -19,7 +19,7 @@ export default function App() {
 
           <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-gray-950 sm:text-6xl">
             Your next professional
-            <span className="text-violet-600"> headshot </span>
+            <span className="text-violet-600"> headSHOT </span>
             starts here.
           </h1>
 
