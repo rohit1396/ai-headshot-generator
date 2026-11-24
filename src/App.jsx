@@ -15,10 +15,12 @@ import GenerationPage from "./pages/GenerationPage";
 
 import useImageUpload from "./hooks/useImageUpload";
 import useCustomization from "./hooks/useCustomization";
+import useHeadshotGenerator from "./hooks/useHeadshotGenerator";
 
 export default function App() {
   const upload = useImageUpload();
   const customization = useCustomization();
+  const generator = useHeadshotGenerator();
 
   const [generationRequest, setGenerationRequest] =
     useState(null);
@@ -57,12 +59,18 @@ export default function App() {
           <Route
             path="/generation"
             element={
-              upload.file && generationRequest ? (
+              upload.file &&
+              generationRequest &&
+              generationRequest.image === upload.file ? (
                 <GenerationPage
                   generationRequest={generationRequest}
+                  generator={generator}
                 />
               ) : (
-                <Navigate to="/upload" replace />
+                <Navigate
+                  to={upload.file ? "/customize" : "/upload"}
+                  replace
+                />
               )
             }
           />

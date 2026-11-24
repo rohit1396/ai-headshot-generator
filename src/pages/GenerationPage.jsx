@@ -1,48 +1,107 @@
 
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, ArrowLeft } from "lucide-react";
+import { CheckCircle2, ArrowLeft } from "lucide-react";
 
 import ProgressStepper from "../components/layout/ProgressStepper";
+import GenerationProgress from "../components/generation/GenerationProgress";
+import GenerationError from "../components/generation/GenerationError";
 
 export default function GenerationPage({
   generationRequest,
+  generator,
 }) {
   const navigate = useNavigate();
+
+  const {
+    status,
+    progress,
+    message,
+    error,
+    result,
+    startGeneration,
+    cancelGeneration,
+    retryGeneration,
+    resetGeneration,
+  } = generator;
+
+  useEffect(() => {
+    startGeneration(generationRequest);
+
+    return () => {
+      cancelGeneration();
+    };
+  }, [
+    generationRequest,
+    startGeneration,
+    cancelGeneration,
+  ]);
+
+  const handleBack = () => {
+    resetGeneration();
+    navigate("/customize");
+  };
 
   return (
     <>
       <ProgressStepper currentStep="results" />
 
-      <section className="mx-auto max-w-xl py-16 text-center">
-        <Sparkles
-          size={40}
-          className="mx-auto text-violet-600"
-        />
+      <section className="mx-auto max-w-2xl pb-16 pt-4">
+        {(status === "idle" ||
+          status === "processing") && (
+          <GenerationProgress
+            progress={progress}
+            message={message}
+            onCancel={cancelGeneration}
+          />
+        )}
 
-        <h1 className="mt-5 text-3xl font-bold">
-          Ready to generate your headshot
-        </h1>
+        {(status === "failed" ||
+          status === "cancelled") && (
+          <GenerationError
+            status={status}
+            error={error}
+            onRetry={retryGeneration}
+            onBack={handleBack}
+          />
+        )}
 
-        <p className="mt-3 text-gray-500">
-          Mock AI generation is coming in Step 4.
-        </p>
+        {status === "success" && result && (
+          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center">
+            <CheckCircle2
+              size={48}
+              className="mx-auto text-green-600"
+            />
 
-        <pre className="mt-6 overflow-auto rounded-xl bg-gray-100 p-5 text-left text-sm">
-          {JSON.stringify(
-            generationRequest.preferences,
-            null,
-            2
-          )}
-        </pre>
+            <h1 className="mt-5 text-3xl font-bold">
+              Your headshot is ready!
+            </h1>
 
-        <button
-          type="button"
-          onClick={() => navigate("/customize")}
-          className="mx-auto mt-6 flex items-center gap-2 font-medium text-violet-600"
-        >
-          <ArrowLeft size={16} />
-          Back to customization
-        </button>
+            <p className="mt-3 text-gray-500">
+              Mock generation completed successfully.
+            </p>
+
+            <img
+              src={result.imageUrl}
+              alt="Sample professional headshot"
+              className="mx-auto mt-6 h-72 w-full max-w-xs rounded-xl object-contain"
+            />
+
+            <p className="mt-3 text-xs text-gray-400">
+              Sample image — not an AI transformation
+              of your selfie.
+            </p>
+
+            <button
+              type="button"
+              onClick={handleBack}
+              className="mx-auto mt-6 flex items-center gap-2 font-medium text-violet-600"
+            >
+              <ArrowLeft size={17} />
+              Back to customization
+            </button>
+          </div>
+        )}
       </section>
     </>
   );
