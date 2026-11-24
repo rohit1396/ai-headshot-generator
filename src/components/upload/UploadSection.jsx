@@ -1,5 +1,6 @@
 
 import {
+    ArrowRight,
     CheckCircle2,
     AlertCircle,
     ShieldCheck,
@@ -21,7 +22,7 @@ import {
     "image/webp",
   ];
   
-  export default function UploadSection({ upload }) {
+  export default function UploadSection({ upload, onContinue }) {
     const {
       file,
       previewUrl,
@@ -113,7 +114,20 @@ import {
             ))}
           </ul>
         </div>
-  
+
+        <button
+          type="button"
+          disabled={!file || !previewUrl}
+          onClick={onContinue}
+          className="mt-6 flex w-full items-center justify-center gap-2
+            rounded-xl bg-violet-600 px-6 py-4 font-semibold
+            text-white transition hover:bg-violet-700
+            disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Customize your headshot
+          <ArrowRight size={18} />
+        </button>
+
         <p className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
           <ShieldCheck size={15} />
           Your photo stays in your browser.
