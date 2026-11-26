@@ -1,7 +1,7 @@
 
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ArrowLeft } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 import ProgressStepper from "../components/layout/ProgressStepper";
 import GenerationProgress from "../components/generation/GenerationProgress";
@@ -25,6 +25,7 @@ export default function GenerationPage({
     resetGeneration,
   } = generator;
 
+  // Start generation when the page mounts.
   useEffect(() => {
     startGeneration(generationRequest);
 
@@ -37,8 +38,16 @@ export default function GenerationPage({
     cancelGeneration,
   ]);
 
+  // Navigate to results after successful generation.
+  useEffect(() => {
+    if (status === "success" && result) {
+      navigate("/results", { replace: true });
+    }
+  }, [status, result, navigate]);
+
   const handleBack = () => {
     resetGeneration();
+
     navigate("/customize");
   };
 
@@ -47,6 +56,7 @@ export default function GenerationPage({
       <ProgressStepper currentStep="results" />
 
       <section className="mx-auto max-w-2xl pb-16 pt-4">
+
         {(status === "idle" ||
           status === "processing") && (
           <GenerationProgress
@@ -67,39 +77,23 @@ export default function GenerationPage({
         )}
 
         {status === "success" && result && (
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 text-center">
+          <div
+            role="status"
+            className="rounded-2xl border border-gray-200
+              bg-white p-10 text-center"
+          >
             <CheckCircle2
               size={48}
               className="mx-auto text-green-600"
             />
 
-            <h1 className="mt-5 text-3xl font-bold">
-              Your headshot is ready!
-            </h1>
+            <h2 className="mt-5 text-2xl font-bold">
+              Generation complete!
+            </h2>
 
             <p className="mt-3 text-gray-500">
-              Mock generation completed successfully.
+              Preparing your results...
             </p>
-
-            <img
-              src={result.imageUrl}
-              alt="Sample professional headshot"
-              className="mx-auto mt-6 h-72 w-full max-w-xs rounded-xl object-contain"
-            />
-
-            <p className="mt-3 text-xs text-gray-400">
-              Sample image — not an AI transformation
-              of your selfie.
-            </p>
-
-            <button
-              type="button"
-              onClick={handleBack}
-              className="mx-auto mt-6 flex items-center gap-2 font-medium text-violet-600"
-            >
-              <ArrowLeft size={17} />
-              Back to customization
-            </button>
           </div>
         )}
       </section>
