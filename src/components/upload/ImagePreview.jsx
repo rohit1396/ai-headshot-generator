@@ -11,6 +11,7 @@ import { formatFileSize } from "../../utils/formatFileSize";
 export default function ImagePreview({
   file,
   previewUrl,
+  hasError,
   onRemove,
   onReplace,
 }) {
@@ -22,7 +23,10 @@ export default function ImagePreview({
         <img
           src={previewUrl}
           alt="Preview of your uploaded selfie"
-          className="h-72 w-full object-contain sm:h-80"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="max-h-[420px] w-full rounded-xl object-contain"
         />
       </div>
 
@@ -49,9 +53,12 @@ export default function ImagePreview({
 
       <input
         ref={inputRef}
+        id="selfie-replace"
         type="file"
         accept="image/jpeg,image/png,image/webp"
         className="hidden"
+        aria-label="Replace uploaded selfie"
+        aria-describedby={hasError ? "upload-error" : undefined}
         onChange={(event) => {
           const newFile = event.target.files?.[0];
 
