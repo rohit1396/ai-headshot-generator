@@ -32,11 +32,7 @@ export default function GenerationPage({
     return () => {
       cancelGeneration();
     };
-  }, [
-    generationRequest,
-    startGeneration,
-    cancelGeneration,
-  ]);
+  }, [startGeneration, generationRequest, cancelGeneration]);
 
   // Navigate to results after successful generation.
   useEffect(() => {

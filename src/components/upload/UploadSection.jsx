@@ -70,20 +70,23 @@ import {
   
         {file && previewUrl ? (
           <ImagePreview
-            file={file}
-            previewUrl={previewUrl}
-            onRemove={removeImage}
+          file={file}
+          previewUrl={previewUrl}
+          hasError={Boolean(error)}
+          onRemove={removeImage}
             onReplace={handleSelect}
           />
         ) : (
           <ImageUploader
             onSelect={handleSelect}
             onError={setError}
+            error={error}
           />
         )}
   
         {error && (
           <div
+            id="upload-error"
             role="alert"
             className="mt-4 flex items-center gap-2
               rounded-xl border border-red-200

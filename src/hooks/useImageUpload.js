@@ -4,6 +4,13 @@ const DB_NAME = "ai-headshot-generator";
 const STORE_NAME = "uploads";
 const IMAGE_KEY = "current-image";
 
+function revokePreviewUrl(previewUrlRef) {
+  if (!previewUrlRef.current) return;
+
+  URL.revokeObjectURL(previewUrlRef.current);
+  previewUrlRef.current = null;
+}
+
 function openImageDatabase() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1);
@@ -86,16 +93,12 @@ export default function useImageUpload() {
 
     return () => {
       mounted = false;
-      if (previewUrlRef.current) {
-        URL.revokeObjectURL(previewUrlRef.current);
-      }
+      revokePreviewUrl(previewUrlRef);
     };
   }, []);
 
   const selectImage = (selectedFile) => {
-    if (previewUrlRef.current) {
-      URL.revokeObjectURL(previewUrlRef.current);
-    }
+    revokePreviewUrl(previewUrlRef);
 
     const objectUrl = URL.createObjectURL(selectedFile);
     previewUrlRef.current = objectUrl;
@@ -108,10 +111,7 @@ export default function useImageUpload() {
   };
 
   const removeImage = () => {
-    if (previewUrlRef.current) {
-      URL.revokeObjectURL(previewUrlRef.current);
-      previewUrlRef.current = null;
-    }
+    revokePreviewUrl(previewUrlRef);
 
     setFile(null);
     setPreviewUrl(null);

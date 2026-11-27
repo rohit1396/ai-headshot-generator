@@ -22,6 +22,9 @@ export default function ImageComparison({
         <img
           src={afterImage}
           alt="Sample professional headshot"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
           draggable={false}
           className="absolute inset-0 h-full w-full
             select-none object-cover"
@@ -31,6 +34,8 @@ export default function ImageComparison({
         <img
           src={beforeImage}
           alt="Original uploaded selfie"
+          loading="eager"
+          decoding="async"
           draggable={false}
           style={{
             clipPath: `inset(0 ${100 - position}% 0 0)`,
