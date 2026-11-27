@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 
 import {
   Route,
@@ -11,15 +11,31 @@ import { Toaster } from "sonner";
 
 import Navbar from "./components/layout/Navbar";
 
-import LandingPage from "./pages/LandingPage";
-import UploadPage from "./pages/UploadPage";
-import CustomizePage from "./pages/CustomizePage";
-import GenerationPage from "./pages/GenerationPage";
-import ResultsPage from "./pages/ResultsPage";
+const LandingPage = lazy(
+  () => import("./pages/LandingPage")
+);
+
+const UploadPage = lazy(
+  () => import("./pages/UploadPage")
+);
+
+const CustomizePage = lazy(
+  () => import("./pages/CustomizePage")
+);
+
+const GenerationPage = lazy(
+  () => import("./pages/GenerationPage")
+);
+
+const ResultsPage = lazy(
+  () => import("./pages/ResultsPage")
+);
 
 import useImageUpload from "./hooks/useImageUpload";
 import useCustomization from "./hooks/useCustomization";
 import useHeadshotGenerator from "./hooks/useHeadshotGenerator";
+import ErrorBoundary from "./components/layout/ErrorBoundary";
+import PageLoader from "./components/layout/PageLoader";
 
 export default function App() {
   const upload = useImageUpload();
@@ -52,96 +68,109 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      <Navbar />
+    <ErrorBoundary>
+      <div className="min-h-screen bg-[#fafafa]">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4
+            focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white
+            focus:p-3 focus:text-violet-700 focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
 
-      <Toaster
-        position="top-right"
-        richColors
-        closeButton
-        duration={3000}
-      />
+        <Navbar />
 
-      <main className="mx-auto max-w-7xl px-6">
-        <Routes>
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          duration={3000}
+        />
 
-          {/* Landing page */}
-          <Route
-            path="/"
-            element={<LandingPage />}
-          />
+        <main id="main-content" className="mx-auto max-w-7xl px-6">
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
 
-          {/* Upload page */}
-          <Route
-            path="/upload"
-            element={<UploadPage upload={upload} />}
-          />
+              {/* Landing page */}
+              <Route
+                path="/"
+                element={<LandingPage />}
+              />
 
-          {/* Customization page */}
-          <Route
-            path="/customize"
-            element={
-              hasImage ? (
-                <CustomizePage
-                  upload={upload}
-                  customization={customization}
-                  setGenerationRequest={
-                    handleGenerationRequest
-                  }
-                />
-              ) : (
-                <Navigate to="/upload" replace />
-              )
-            }
-          />
+              {/* Upload page */}
+              <Route
+                path="/upload"
+                element={<UploadPage upload={upload} />}
+              />
 
-          {/* Generation page */}
-          <Route
-            path="/generation"
-            element={
-              hasValidRequest ? (
-                <GenerationPage
-                  generationRequest={generationRequest}
-                  generator={generator}
-                />
-              ) : (
-                <Navigate
-                  to={hasImage ? "/customize" : "/upload"}
-                  replace
-                />
-              )
-            }
-          />
+              {/* Customization page */}
+              <Route
+                path="/customize"
+                element={
+                  hasImage ? (
+                    <CustomizePage
+                      upload={upload}
+                      customization={customization}
+                      setGenerationRequest={
+                        handleGenerationRequest
+                      }
+                    />
+                  ) : (
+                    <Navigate to="/upload" replace />
+                  )
+                }
+              />
 
-          {/* Results page */}
-          <Route
-            path="/results"
-            element={
-              hasResult ? (
-                <ResultsPage
-                  upload={upload}
-                  customization={customization}
-                  generator={generator}
-                  generationRequest={generationRequest}
-                  setGenerationRequest={setGenerationRequest}
-                />
-              ) : (
-                <Navigate
-                  to={hasImage ? "/customize" : "/upload"}
-                  replace
-                />
-              )
-            }
-          />
+              {/* Generation page */}
+              <Route
+                path="/generation"
+                element={
+                  hasValidRequest ? (
+                    <GenerationPage
+                      generationRequest={generationRequest}
+                      generator={generator}
+                    />
+                  ) : (
+                    <Navigate
+                      to={hasImage ? "/customize" : "/upload"}
+                      replace
+                    />
+                  )
+                }
+              />
 
-          {/* Fallback route */}
-          <Route
-            path="*"
-            element={<Navigate to="/" replace />}
-          />
+              {/* Results page */}
+              <Route
+                path="/results"
+                element={
+                  hasResult ? (
+                    <ResultsPage
+                      upload={upload}
+                      customization={customization}
+                      generator={generator}
+                      generationRequest={generationRequest}
+                      setGenerationRequest={setGenerationRequest}
+                    />
+                  ) : (
+                    <Navigate
+                      to={hasImage ? "/customize" : "/upload"}
+                      replace
+                    />
+                  )
+                }
+              />
 
-        </Routes>
-      </main>
-    </div>
+              {/* Fallback route */}
+              <Route
+                path="*"
+                element={<Navigate to="/" replace />}
+              />
+
+            </Routes>
+          </Suspense>
+        </main>
+      </div>
+    </ErrorBoundary>
   );
 }

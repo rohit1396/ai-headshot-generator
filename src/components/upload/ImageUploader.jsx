@@ -7,6 +7,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024;
 export default function ImageUploader({
   onSelect,
   onError,
+  error,
 }) {
   const {
     getRootProps,
@@ -73,7 +74,9 @@ export default function ImageUploader({
     >
       <input
         {...getInputProps({
+          id: "selfie-upload",
           "aria-label": "Upload your selfie",
+          "aria-describedby": error ? "upload-error" : undefined,
         })}
       />
 

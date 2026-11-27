@@ -53,6 +53,7 @@ export default function ProfessionSelector({
                     src={profession.image}
                     alt={`${profession.label} headshot example`}
                     loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
 
